@@ -1,0 +1,7 @@
+# Verification-only overlay (never shipped in the package `files` list).
+# Boot with: dsh --profile test --patch <this file>
+# It appends a plugin that reports each system-prompt assembly to
+# verify/mp-assembly-report.txt so the gate can prove the section landed.
+- insert:
+    - id: mp-assembly-verify
+      name: file:///E:/Project/DSH_Plugins/plugins/dsh-method-principles/verify/overlay-verify.mjs
