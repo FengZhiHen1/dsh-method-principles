@@ -4,7 +4,13 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { apply, Config, DEFAULT_PRINCIPLES_TEXT } from '../index.js'
+import {
+  apply,
+  Config,
+  DEFAULT_ENGINEERING_RIGOR_TEXT,
+  DEFAULT_PRINCIPLES_TEXT,
+  DEFAULT_ROUTES,
+} from '../index.js'
 import { makeCtx } from './mock-ctx.mjs'
 
 const HEADING = 'Working principles:'
@@ -30,11 +36,13 @@ test('schema passes unknown keys through in its default non-strict mode', () => 
   // Schemastery merges unknown keys unless resolved in strict mode, which the
   // plugin never sees. Extra keys therefore cannot fail the mount; this plugin
   // ignores them (it reads `text` and `routes` only).
-  assert.deepEqual(Config({ text: 'X', extra: true }), { text: 'X', routes: [], extra: true })
+  assert.deepEqual(Config({ text: 'X', extra: true }).extra, true)
 })
 
-test('schema defaults routes to an empty list', () => {
-  assert.deepEqual(Config({}).routes, [])
+test('schema defaults routes to the shipped engineering route', () => {
+  assert.deepEqual(Config({}).routes, DEFAULT_ROUTES)
+  assert.deepEqual(Config({}).routes[0].presets, ['standard', 'ptc'])
+  assert.equal(Config({}).routes[0].mainAgentOnly, true)
 })
 
 test('schema fills route defaults: mainAgentOnly is true', () => {
@@ -59,9 +67,25 @@ test('default text contains no prompt variable references', () => {
   assert.equal(DEFAULT_PRINCIPLES_TEXT.includes('{{'), false)
 })
 
+test('engineering block is trigger-shaped: three moments, no slogan heading', () => {
+  assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.split('\n')[0], 'Working method (apply the rule when its moment comes):')
+  for (const trigger of [
+    'Before changing anything:',
+    'Whenever you state a cause, a fix, or a conclusion:',
+    'Before reporting a task complete:',
+  ]) {
+    assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes(trigger), trigger)
+  }
+  assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('{{'), false)
+})
+
+test('engineering block excludes adversarial review', () => {
+  assert.equal(/adversarial|reviewer|subagent/i.test(DEFAULT_ENGINEERING_RIGOR_TEXT), false)
+})
+
 test('apply forwards the schema-filled config text to the section', () => {
   const { ctx, sections, agentContext } = makeCtx({ presetId: 'standard' })
   apply(ctx, Config({}))
   assert.equal(sections.length, 1)
-  assert.equal(sections[0].text(agentContext()), DEFAULT_PRINCIPLES_TEXT)
+  assert.equal(sections[0].text(agentContext()), `${DEFAULT_PRINCIPLES_TEXT}\n\n${DEFAULT_ENGINEERING_RIGOR_TEXT}`)
 })

@@ -1,0 +1,5 @@
+# Verification-only overlay (never shipped). Boot with:
+# dsh --patch <this file> --profile test --port 0 --no-open
+- insert:
+    - id: mp-route-probe3
+      name: file:///E:/Project/DSH_Plugins/plugins/dsh-method-principles/verify/probe-route3.mjs

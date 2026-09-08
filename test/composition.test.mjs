@@ -44,7 +44,9 @@ test('package manifest declares the bundle patch and the module entry', async ()
 test('plugin entry exposes the loader face, section constants and routing helpers', () => {
   assert.deepEqual(Object.keys(plugin).sort(), [
     'Config',
+    'DEFAULT_ENGINEERING_RIGOR_TEXT',
     'DEFAULT_PRINCIPLES_TEXT',
+    'DEFAULT_ROUTES',
     'SECTION_NAME',
     'SECTION_ORDER',
     'apply',

@@ -8,8 +8,8 @@
 
 - 主题：`dsh-method-principles`（向 DSH 系统提示词追加一段方法论原则的薄壳插件，Host bundle 形态）。
 - 设计基线：2026-09-08 经用户逐项确认，见 `decisions/`。
-- 实现状态：**已实现**（2026-09-08）——包骨架、插件面、按 agent 路由（`Config.routes`）、五个测试文件（48 例全绿）、分层门禁（core 1 文件）通过。
-- 部署状态：**试验环境实测通过**（2026-09-08）——`--dump-config` 恰一行、启动无 `N entries did not activate`、装配报告确认段落在 persona 之后、plan 之前；路由机制经探针实测（`standard`/`ptc` 均正确解析 preset id）。记录见 `technical-details/部署.md`。稳定环境尚未挂载。
+- 实现状态：**已实现**（2026-09-08）——包骨架、插件面、按 agent 路由（`Config.routes` + 默认工程块）、五个测试文件（53 例全绿）、分层门禁（core 1 文件）通过。
+- 部署状态：**试验环境实测通过**（2026-09-08）——`--dump-config` 恰一行、启动无 `N entries did not activate`、装配报告确认段落在 persona 之后、plan 之前；路由机制与路由文案均经探针实测（`standard`/`ptc` 主 Agent 拿到工程块，`minimal` 只拿基础文案）。记录见 `technical-details/部署.md`。稳定环境尚未挂载。
 
 ## 阅读顺序
 

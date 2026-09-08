@@ -5,7 +5,9 @@
 export {
   apply,
   Config,
+  DEFAULT_ENGINEERING_RIGOR_TEXT,
   DEFAULT_PRINCIPLES_TEXT,
+  DEFAULT_ROUTES,
   inject,
   name,
   SECTION_NAME,

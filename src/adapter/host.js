@@ -44,6 +44,43 @@ export const DEFAULT_PRINCIPLES_TEXT = [
   '- High cohesion, low coupling: keep related logic together and isolate modules behind clear interfaces, so each change has a bounded blast radius.',
 ].join('\n')
 
+/**
+ * Engineering-method block routed to the coding agents' main agents. Written as
+ * TRIGGERS, not slogans: each rule is bound to the moment it must fire, because
+ * the observed failure mode is that the model knows these methods but does not
+ * apply them unprompted (it rushes in and confabulates). Deliberately excludes
+ * adversarial review — that protocol needs a subagent and belongs to presets
+ * that own one; this block stays executable by the agent reading it.
+ */
+export const DEFAULT_ENGINEERING_RIGOR_TEXT = [
+  'Working method (apply the rule when its moment comes):',
+  '',
+  'Before changing anything:',
+  '- Confirm the problem actually exists and reproduces, and name the root cause. If you cannot reproduce it, say so before working around it.',
+  '',
+  'Whenever you state a cause, a fix, or a conclusion:',
+  '- Separate what you observed from what you inferred, and say what evidence would overturn it.',
+  '',
+  'Before reporting a task complete:',
+  '- State what you ran, what you observed, and what you did NOT verify.',
+  '- List the conclusions that lack evidence, the cases you did not test, and the places you are guessing.',
+].join('\n')
+
+/**
+ * Default routes: the engineering block reaches main agents of the coding
+ * presets only. `mainAgentOnly` keeps subagents on the base block, so a
+ * delegated worker never inherits instructions meant for the agent that owns
+ * the task.
+ */
+export const DEFAULT_ROUTES = [
+  {
+    id: 'engineering',
+    presets: ['standard', 'ptc'],
+    text: DEFAULT_ENGINEERING_RIGOR_TEXT,
+    mainAgentOnly: true,
+  },
+]
+
 const routeSchema = z.object({
   id: z.string(),
   presets: z.array(z.string()).required(),
@@ -60,7 +97,7 @@ const routeSchema = z.object({
  */
 export const Config = z.object({
   text: z.string().default(DEFAULT_PRINCIPLES_TEXT),
-  routes: z.array(routeSchema).default([]),
+  routes: z.array(routeSchema).default(DEFAULT_ROUTES),
 })
 
 export const name = 'dsh-method-principles'
@@ -98,7 +135,7 @@ function textFor(ctx, config, context) {
  */
 export function apply(ctx, config) {
   const text = config?.text ?? DEFAULT_PRINCIPLES_TEXT
-  const routes = config?.routes ?? []
+  const routes = config?.routes ?? DEFAULT_ROUTES
   if (text.length === 0 && routes.length === 0) return
   ctx.effect(() => ctx.systemPrompt.section({
     name: SECTION_NAME,

@@ -4,7 +4,15 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { apply, Config, depthOf, resolveRouteText, routeMatches } from '../index.js'
+import {
+  apply,
+  Config,
+  DEFAULT_ENGINEERING_RIGOR_TEXT,
+  DEFAULT_PRINCIPLES_TEXT,
+  depthOf,
+  resolveRouteText,
+  routeMatches,
+} from '../index.js'
 import { makeCtx } from './mock-ctx.mjs'
 
 const route = (over = {}) => ({ id: 'r', presets: ['standard'], text: 'R', mainAgentOnly: true, ...over })
@@ -101,4 +109,32 @@ test('assembly text: a missing roster yields the base block, never a throw', () 
   const { ctx, sections, agentContext } = makeCtx({ presetId: 'standard', withPresets: false })
   apply(ctx, Config({ text: 'BASE', routes: [route({ text: 'ENG' })] }))
   assert.equal(sections[0].text(agentContext()), 'BASE')
+})
+
+// --- shipped defaults (the coding layer actually shipped in the package) ---
+
+test('shipped default: standard and ptc main agents get base + engineering block', () => {
+  for (const presetId of ['standard', 'ptc']) {
+    const { ctx, sections, agentContext } = makeCtx({ presetId })
+    apply(ctx, Config({}))
+    assert.equal(
+      sections[0].text(agentContext()),
+      `${DEFAULT_PRINCIPLES_TEXT}\n\n${DEFAULT_ENGINEERING_RIGOR_TEXT}`,
+      presetId,
+    )
+  }
+})
+
+test('shipped default: subagents get only the base block', () => {
+  const { ctx, sections, agentContext } = makeCtx({ presetId: 'standard', depth: 1 })
+  apply(ctx, Config({}))
+  assert.equal(sections[0].text(agentContext()), DEFAULT_PRINCIPLES_TEXT)
+})
+
+test('shipped default: other presets get only the base block', () => {
+  for (const presetId of ['minimal', 'cordis', 'dev-orchestrator', 'auteur']) {
+    const { ctx, sections, agentContext } = makeCtx({ presetId })
+    apply(ctx, Config({}))
+    assert.equal(sections[0].text(agentContext()), DEFAULT_PRINCIPLES_TEXT, presetId)
+  }
 })
