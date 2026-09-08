@@ -1,0 +1,11 @@
+# dsh-method-principles bundle layer — applied when a profile lists this package
+# in dsh.profile.bundles. The row references the package by name so Node module
+# resolution finds the installed code. The plugin registers ONE global system
+# prompt section (`deployment:method-principles`, order 200); its text comes
+# from the exported Schemastery `Config` schema, whose default is the distilled
+# principles text. The row carries no config: override by id in your own profile
+# patch layer (see README) to replace the text, or set `text: ''` to remove the
+# section entirely.
+- insert:
+    - id: method-principles
+      name: dsh-method-principles

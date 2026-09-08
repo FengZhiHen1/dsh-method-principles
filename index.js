@@ -1,0 +1,13 @@
+// Public plugin face. All wiring lives in src/adapter/host.js so the package
+// entry stays a thin forwarder (repository convention: adapter owns the DSH
+// surface, index.js owns nothing). The section constants are re-exported for
+// tests and for users composing their own patches.
+export {
+  apply,
+  Config,
+  DEFAULT_PRINCIPLES_TEXT,
+  inject,
+  name,
+  SECTION_NAME,
+  SECTION_ORDER,
+} from './src/adapter/host.js'
