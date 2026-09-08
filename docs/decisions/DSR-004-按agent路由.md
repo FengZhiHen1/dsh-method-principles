@@ -26,6 +26,14 @@
 
 采用方向 B。`Config` 扩展为 `{ text, routes }`；`routes` 每项 `{ id, presets, text, mainAgentOnly=true }`；段文本函数按 `agentPresets.composedPreset(agent.ctx)` 与 `max(header.delegationDepth, options.subagentDepth)` 求值。
 
+工程块的文本形态另有三项已定取舍：
+
+| 取舍 | 决定 | 理由 |
+|---|---|---|
+| 是否加"按比例 / 只在相关时适用"元原则 | **不加** | 它把判断权交回给模型，而模型系统性低估自己的流程成本；改用具体触发点 |
+| 根因写法 | **条件性要求**（"根因+证据"或"仍未确认+如何验证"） | 禁令可被沉默满足；条件性要求无法靠沉默满足，也不要求事前已知根因 |
+| "改前确认"是否加条件 | **不加**（宁可每次先停一下） | 用户决定；代价见重访条件 |
+
 理由：机制成立性已在试验实例实测（两个 preset 的主 Agent 均正确解析出 preset id 与深度 0），验证成本已支付；此后新增 agent 类型只需加一条 route 配置。
 
 ## 直接后果

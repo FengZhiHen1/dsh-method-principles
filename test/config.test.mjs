@@ -67,16 +67,25 @@ test('default text contains no prompt variable references', () => {
   assert.equal(DEFAULT_PRINCIPLES_TEXT.includes('{{'), false)
 })
 
-test('engineering block is trigger-shaped: three moments, no slogan heading', () => {
-  assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.split('\n')[0], 'Working method (apply the rule when its moment comes):')
+test('engineering block is trigger-shaped: four moments, no proportionality escape', () => {
+  assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.split('\n')[0], 'Working method')
   for (const trigger of [
-    'Before changing anything:',
-    'Whenever you state a cause, a fix, or a conclusion:',
+    'Before changing behavior:',
+    'Before you claim a fix works:',
+    'When you state a cause, a fix, or a conclusion that matters:',
     'Before reporting a task complete:',
   ]) {
     assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes(trigger), trigger)
   }
+  // The proportionality meta-rule was rejected: it hands the decision back to
+  // the model that under-estimates its own process cost.
+  assert.equal(/proportional|when relevant|risk and uncertainty/i.test(DEFAULT_ENGINEERING_RIGOR_TEXT), false)
   assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('{{'), false)
+})
+
+test('engineering block makes the root cause a conditional requirement, not a ban', () => {
+  assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('root cause with its evidence'))
+  assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('still unconfirmed and how you will test it'))
 })
 
 test('engineering block excludes adversarial review', () => {

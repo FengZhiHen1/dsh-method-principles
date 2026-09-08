@@ -48,22 +48,37 @@ export const DEFAULT_PRINCIPLES_TEXT = [
  * Engineering-method block routed to the coding agents' main agents. Written as
  * TRIGGERS, not slogans: each rule is bound to the moment it must fire, because
  * the observed failure mode is that the model knows these methods but does not
- * apply them unprompted (it rushes in and confabulates). Deliberately excludes
- * adversarial review — that protocol needs a subagent and belongs to presets
- * that own one; this block stays executable by the agent reading it.
+ * apply them unprompted (it rushes in and confabulates).
+ *
+ * Deliberate choices:
+ * - no proportionality meta-rule: "apply when relevant / proportional to risk"
+ *   hands the decision back to the model, which is exactly what under-estimates
+ *   its own process cost; concrete triggers replace it.
+ * - the root cause is a CONDITIONAL REQUIREMENT, not a prohibition: stating
+ *   "unconfirmed + how you will test it" is a legal, non-silent way to comply,
+ *   so a guess is never dressed up as a confirmed cause.
+ * - claims are limited to those that matter, so the block does not turn every
+ *   sentence into an evidence ceremony.
+ * - adversarial review is excluded: that protocol needs a subagent and belongs
+ *   to presets that own one.
  */
 export const DEFAULT_ENGINEERING_RIGOR_TEXT = [
-  'Working method (apply the rule when its moment comes):',
+  'Working method',
   '',
-  'Before changing anything:',
-  '- Confirm the problem actually exists and reproduces, and name the root cause. If you cannot reproduce it, say so before working around it.',
+  'Before changing behavior:',
+  '- Establish a baseline: reproduce the reported behavior when you can. If you cannot, say so and name the evidence you do have.',
+  '- State the observable success criteria. When there is no reproducible problem (new feature, refactor, docs), the success criteria are the baseline.',
   '',
-  'Whenever you state a cause, a fix, or a conclusion:',
+  'Before you claim a fix works:',
+  '- State either the root cause with its evidence, or that the cause is still unconfirmed and how you will test it.',
+  '',
+  'When you state a cause, a fix, or a conclusion that matters:',
   '- Separate what you observed from what you inferred, and say what evidence would overturn it.',
   '',
   'Before reporting a task complete:',
-  '- State what you ran, what you observed, and what you did NOT verify.',
-  '- List the conclusions that lack evidence, the cases you did not test, and the places you are guessing.',
+  '- State the checks you actually ran and what you observed.',
+  '- State the acceptance criteria you did not verify, the cases you did not test, and the assumptions that could change the result.',
+  '- Do not imply verification you did not perform.',
 ].join('\n')
 
 /**
