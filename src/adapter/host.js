@@ -7,9 +7,19 @@
 // so the fiber's dispose path removes it automatically. Section name and order
 // are deliberate: `deployment:method-principles` never collides with the
 // persona slot, and order 200 places the block after the persona and before
-// plan policy / tool guidance. Reference: docs/technical-details/提示词段机制.md.
+// plan policy / tool guidance.
+//
+// Per-agent routing: the section text is a function evaluated at each assembly.
+// The base `text` is the universal block; `routes` add per-preset blocks. The
+// route decision needs two facts from the assembly context — the agent's
+// joined preset (via ctx.agentPresets.composedPreset(agent.ctx)) and its
+// delegation depth — which are extracted here and matched in src/core/routes.js.
+// A route therefore reaches only the agents it names, and (by default) only
+// main agents, so a reviewer subagent never inherits the review protocol.
+// Reference: docs/technical-details/提示词段机制.md.
 
 import z from '@deepseek-ai/schemastery'
+import { depthOf, resolveRouteText } from '../core/routes.js'
 
 /** Global system-prompt section name. Must stay unique across every plugin and preset. */
 export const SECTION_NAME = 'deployment:method-principles'
@@ -34,34 +44,65 @@ export const DEFAULT_PRINCIPLES_TEXT = [
   '- High cohesion, low coupling: keep related logic together and isolate modules behind clear interfaces, so each change has a bounded blast radius.',
 ].join('\n')
 
+const routeSchema = z.object({
+  id: z.string(),
+  presets: z.array(z.string()).required(),
+  text: z.string().required(),
+  /** Default true: subagents (delegation depth > 0) never inherit this route. */
+  mainAgentOnly: z.boolean().default(true),
+})
+
 /**
  * Plugin config. The loader validates this schema BEFORE apply and fills in
  * defaults, so apply always receives a complete config; an invalid value fails
- * the mount with the loader's actionable ValidationError. `text` is the only
- * field: replacing it swaps the whole block, and an empty string removes the
- * section from the assembled prompt.
+ * the mount with the loader's actionable ValidationError. `text` is the
+ * universal block; `routes` are per-preset additions matched in order.
  */
 export const Config = z.object({
   text: z.string().default(DEFAULT_PRINCIPLES_TEXT),
+  routes: z.array(routeSchema).default([]),
 })
 
 export const name = 'dsh-method-principles'
 
-/** Hard dependency: apply registers into this service, so wait for it. */
-export const inject = ['systemPrompt']
+/** Hard dependencies: the section registry and the preset roster (for routing). */
+export const inject = ['systemPrompt', 'agentPresets']
 
 /**
- * Register the section. An empty text registers nothing — the assembled prompt
- * drops empty sections anyway, and skipping the registration keeps the registry
- * honest about what this plugin contributes.
+ * Resolve the section text for one assembly: the base block plus any route the
+ * agent matches. The preset lookup is defensive: `inject` guarantees the roster
+ * is present, but an assembly without an agent (or a context that lost the
+ * service) must never fail — it simply matches no route.
+ * @param ctx - the plugin context (for the preset roster).
+ * @param config - validated config supplied by the loader.
+ * @param context - the assembly context carrying the agent, when present.
+ * @returns the text for this assembly; '' removes the section from it.
+ */
+function textFor(ctx, config, context) {
+  const agent = context?.agent
+  const presets = ctx.agentPresets
+  const presetId = agent === undefined || presets === undefined
+    ? undefined
+    : presets.composedPreset(agent.ctx)
+  const routed = resolveRouteText(config.routes, { presetId, depth: depthOf(agent) })
+  if (routed.length === 0) return config.text
+  return config.text.length === 0 ? routed : `${config.text}\n\n${routed}`
+}
+
+/**
+ * Register the section. An empty text and no matching route register nothing —
+ * the assembled prompt drops empty sections anyway, and skipping the
+ * registration keeps the registry honest about what this plugin contributes.
  * @param ctx - the plugin's Cordis context.
  * @param config - validated config supplied by the loader.
  */
 export function apply(ctx, config) {
   const text = config?.text ?? DEFAULT_PRINCIPLES_TEXT
-  if (text.length === 0) return
-  ctx.effect(
-    () => ctx.systemPrompt.section({ name: SECTION_NAME, order: SECTION_ORDER, text }),
-    'dsh-method-principles.section()',
-  )
+  const routes = config?.routes ?? []
+  if (text.length === 0 && routes.length === 0) return
+  ctx.effect(() => ctx.systemPrompt.section({
+    name: SECTION_NAME,
+    order: SECTION_ORDER,
+    text: (context) => textFor(ctx, { text, routes }, context),
+  }), 'dsh-method-principles.section()')
 }

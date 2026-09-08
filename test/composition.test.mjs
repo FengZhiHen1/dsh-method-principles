@@ -41,18 +41,21 @@ test('package manifest declares the bundle patch and the module entry', async ()
   assert.equal(manifest.dsh.client, undefined)
 })
 
-test('plugin entry exposes the loader face plus the section constants', () => {
+test('plugin entry exposes the loader face, section constants and routing helpers', () => {
   assert.deepEqual(Object.keys(plugin).sort(), [
     'Config',
     'DEFAULT_PRINCIPLES_TEXT',
     'SECTION_NAME',
     'SECTION_ORDER',
     'apply',
+    'depthOf',
     'inject',
     'name',
+    'resolveRouteText',
+    'routeMatches',
   ])
   assert.equal(plugin.name, 'dsh-method-principles')
-  assert.deepEqual(plugin.inject, ['systemPrompt'])
+  assert.deepEqual(plugin.inject, ['systemPrompt', 'agentPresets'])
   assert.equal(typeof plugin.apply, 'function')
 })
 

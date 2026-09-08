@@ -6,36 +6,10 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { apply, Config, SECTION_NAME } from '../index.js'
-
-function makeLifecycleCtx() {
-  const sections = []
-  const disposers = []
-  const ctx = {
-    effect: (fn) => {
-      const result = fn()
-      if (typeof result === 'function') disposers.push(result)
-    },
-    systemPrompt: {
-      section: (section) => {
-        sections.push(section)
-        return () => {
-          const index = sections.indexOf(section)
-          if (index >= 0) sections.splice(index, 1)
-        }
-      },
-    },
-  }
-  return {
-    ctx,
-    sections,
-    dispose: () => {
-      while (disposers.length > 0) disposers.pop()()
-    },
-  }
-}
+import { makeCtx } from './mock-ctx.mjs'
 
 test('dispose removes the section completely', () => {
-  const { ctx, sections, dispose } = makeLifecycleCtx()
+  const { ctx, sections, dispose } = makeCtx({ presetId: 'standard' })
   apply(ctx, Config({}))
   assert.equal(sections.length, 1)
   dispose()
@@ -43,7 +17,7 @@ test('dispose removes the section completely', () => {
 })
 
 test('remount after dispose registers exactly one section again', () => {
-  const { ctx, sections, dispose } = makeLifecycleCtx()
+  const { ctx, sections, dispose } = makeCtx({ presetId: 'standard' })
   apply(ctx, Config({}))
   dispose()
   apply(ctx, Config({}))
@@ -52,16 +26,25 @@ test('remount after dispose registers exactly one section again', () => {
 })
 
 test('dispose is idempotent', () => {
-  const { ctx, sections, dispose } = makeLifecycleCtx()
+  const { ctx, sections, dispose } = makeCtx({ presetId: 'standard' })
   apply(ctx, Config({}))
   dispose()
   dispose()
   assert.equal(sections.length, 0)
 })
 
-test('empty-text mount followed by dispose leaves nothing behind', () => {
-  const { ctx, sections, dispose } = makeLifecycleCtx()
+test('empty mount followed by dispose leaves nothing behind', () => {
+  const { ctx, sections, dispose } = makeCtx({ presetId: 'standard' })
   apply(ctx, Config({ text: '' }))
   dispose()
   assert.equal(sections.length, 0)
+})
+
+test('remount with different config replaces the previous text', () => {
+  const { ctx, sections, dispose, agentContext } = makeCtx({ presetId: 'standard' })
+  apply(ctx, Config({ text: 'first' }))
+  dispose()
+  apply(ctx, Config({ text: 'second' }))
+  assert.equal(sections.length, 1)
+  assert.equal(sections[0].text(agentContext()), 'second')
 })

@@ -8,8 +8,8 @@
 
 - 主题：`dsh-method-principles`（向 DSH 系统提示词追加一段方法论原则的薄壳插件，Host bundle 形态）。
 - 设计基线：2026-09-08 经用户逐项确认，见 `decisions/`。
-- 实现状态：**已实现**（2026-09-08）——包骨架、插件面、四个测试文件（26 例全绿）、分层门禁薄壳豁免通过。
-- 部署状态：**试验环境实测通过**（2026-09-08）——`--dump-config` 恰一行、启动无 `N entries did not activate`、装配报告确认段落在 persona 之后、plan 之前（记录见 `technical-details/部署.md`）。稳定环境尚未挂载。
+- 实现状态：**已实现**（2026-09-08）——包骨架、插件面、按 agent 路由（`Config.routes`）、五个测试文件（48 例全绿）、分层门禁（core 1 文件）通过。
+- 部署状态：**试验环境实测通过**（2026-09-08）——`--dump-config` 恰一行、启动无 `N entries did not activate`、装配报告确认段落在 persona 之后、plan 之前；路由机制经探针实测（`standard`/`ptc` 均正确解析 preset id）。记录见 `technical-details/部署.md`。稳定环境尚未挂载。
 
 ## 阅读顺序
 
@@ -32,6 +32,7 @@
 | `decisions/DSR-001-交付形态与生效范围.md` | 交付形态（全局段）的备选、评价与重访条件 |
 | `decisions/DSR-002-文案配置粒度.md` | 文案配置粒度与消融单位的备选、评价与重访条件 |
 | `decisions/DSR-003-提示词段落点.md` | 落点选择（注册段 vs 装配事件 vs persona）的备选、评价与重访条件 |
+| `decisions/DSR-004-按agent路由.md` | 按 agent 路由的实现形态（单插件装配时求值 vs preset 本地文件）的备选、评价与重访条件 |
 | `TODO.md` | 未决与延期事项（仅未完成） |
 
 ## 已知偏差与 `missing evidence`

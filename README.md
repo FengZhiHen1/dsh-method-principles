@@ -30,19 +30,27 @@ node '<实例版本 bin>' plugin --profile test add link:<本仓库路径>
 
 ## 配置
 
-默认行不带 config，文案由 schema 默认值提供。要替换文案，在自己的 profile patch 层按 id 覆盖：
+默认行不带 config，文案由 schema 默认值提供。要替换文案或按 agent 追加协议，在自己的 profile patch 层按 id 覆盖：
 
 ```yaml
 # $DSH_HOME/profiles/<profile>/cordis.patch.yml 或 --patch overlay
 - id: method-principles
   config:
-    text: |
+    text: |                      # 基础文案：所有 agent（含子代理）都拿到
       Working principles:
       - ...
+    routes:                      # 可选：按 agent preset 追加的协议
+      - id: engineering
+        presets: [standard, ptc] # 按 preset id 匹配（首条命中生效）
+        mainAgentOnly: true      # 默认值；子代理（委派深度 > 0）不继承
+        text: |
+          Engineering rigor:
+          - ...
 ```
 
-- 覆盖是**整个 config 值替换**（不是深合并）；只写 `text` 即可。
-- `text: ''` 表示关闭该段。
+- 覆盖是**整个 config 值替换**（不是深合并）；只写 `text` 即可保留基础文案语义。
+- `text: ''` 且无 `routes` 表示关闭该段。
+- 路由规则与降级行为见 `docs/technical-details/提示词段机制.md`。
 - 文案是纯静态字符串，**不要写 `{{...}}`**：未注册的变量会让该 scope 的装配失败。
 
 ## 验证

@@ -1,0 +1,7 @@
+# Verification-only overlay (never shipped in the package `files` list).
+# Boot with: dsh --patch <this file> --profile test --port 0 --no-open
+# It appends the routing probe, which reports each assembly's agent, depth and
+# joined preset to verify/mp-route-report.txt.
+- insert:
+    - id: mp-route-probe
+      name: file:///E:/Project/DSH_Plugins/plugins/dsh-method-principles/verify/probe-route.mjs
