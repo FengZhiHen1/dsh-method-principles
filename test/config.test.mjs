@@ -67,12 +67,13 @@ test('default text contains no prompt variable references', () => {
   assert.equal(DEFAULT_PRINCIPLES_TEXT.includes('{{'), false)
 })
 
-test('engineering block is trigger-shaped: four moments, no proportionality escape', () => {
+test('engineering block is trigger-shaped: five moments, no proportionality escape', () => {
   assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.split('\n')[0], 'Working method')
   for (const trigger of [
     'Before changing behavior:',
     'Before you claim a fix works:',
     'When you state a cause, a fix, or a conclusion that matters:',
+    'Before any destructive or irreversible operation (delete, overwrite, truncate, force-push, drop, recursive cleanup):',
     'Before reporting a task complete:',
   ]) {
     assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes(trigger), trigger)
@@ -86,6 +87,21 @@ test('engineering block is trigger-shaped: four moments, no proportionality esca
 test('engineering block makes the root cause a conditional requirement, not a ban', () => {
   assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('root cause with its evidence'))
   assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('still unconfirmed and how you will test it'))
+})
+
+test('destructive gate states the failure-mode self-check and the ordering rule', () => {
+  assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('Treat it as high-risk by default, however routine it looks.'))
+  assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('if the step before this had silently done nothing, what would this destroy?'))
+  assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('a check after it is an autopsy, not a gate'))
+})
+
+test('only-copy rule carries an explicit exception with a named authority', () => {
+  const line = DEFAULT_ENGINEERING_RIGOR_TEXT.split('\n').find(candidate => candidate.includes('only copy of anything'))
+  assert.ok(line !== undefined)
+  // The escape hatch names who may establish it, so the model cannot self-authorize.
+  assert.ok(line.includes('unless it has been established as no longer needed'))
+  assert.ok(line.includes('not your own confidence'))
+  assert.ok(line.includes('When unsure, treat it as the only copy.'))
 })
 
 test('engineering block excludes adversarial review', () => {

@@ -59,6 +59,11 @@ export const DEFAULT_PRINCIPLES_TEXT = [
  *   so a guess is never dressed up as a confirmed cause.
  * - claims are limited to those that matter, so the block does not turn every
  *   sentence into an evidence ceremony.
+ * - the destructive-operation gate exists because a real incident destroyed the
+ *   only copy of data: an irreversible delete ran after a step that had failed
+ *   SILENTLY, and the "validation" sat after the delete. The gate therefore
+ *   states the failure-mode self-check as a question, and names who may lift the
+ *   only-copy rule (evidence or the user — never the model's own confidence).
  * - adversarial review is excluded: that protocol needs a subagent and belongs
  *   to presets that own one.
  */
@@ -74,6 +79,12 @@ export const DEFAULT_ENGINEERING_RIGOR_TEXT = [
   '',
   'When you state a cause, a fix, or a conclusion that matters:',
   '- Separate what you observed from what you inferred, and say what evidence would overturn it.',
+  '',
+  'Before any destructive or irreversible operation (delete, overwrite, truncate, force-push, drop, recursive cleanup):',
+  '- Treat it as high-risk by default, however routine it looks.',
+  '- Do not destroy the only copy of anything — unless it has been established as no longer needed, or as recoverable from a version repository, another copy, or the user. "Established" means clear evidence or the user\'s word, not your own confidence. When unsure, treat it as the only copy.',
+  '- A destructive step must be its own invocation, and the step it depends on must already be verified from a result you have read. Ask: if the step before this had silently done nothing, what would this destroy?',
+  '- Validation has to come before the destructive step; a check after it is an autopsy, not a gate. Never let a command that fails silently be the last thing before one that cannot be undone.',
   '',
   'Before reporting a task complete:',
   '- State the checks you actually ran and what you observed.',
