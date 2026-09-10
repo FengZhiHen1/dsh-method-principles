@@ -8,8 +8,8 @@
 
 - 主题：`dsh-method-principles`（向 DSH 系统提示词追加一段方法论原则的薄壳插件，Host bundle 形态）。
 - 设计基线：2026-09-08 经用户逐项确认，见 `decisions/`。
-- 实现状态：**已实现**（2026-09-08）——包骨架、插件面、按 agent 路由（`Config.routes` + 默认工程块）、五个测试文件（53 例全绿）、分层门禁（core 1 文件）通过。
-- 部署状态：**已挂载稳定环境**（2026-09-08）——子仓库已推送 GitHub，`dsh plugin --profile web add github:FengZhiHen1/dsh-method-principles` 成功，lockfile 解析到 commit `a41667e`，`--dump-config` 恰一行。**待用户在 GUI 重启实例后生效**。试验环境实测记录见 `technical-details/部署.md`。
+- 实现状态：**已实现**（2026-09-09）——包骨架、插件面、按 agent 路由（`Config.routes` + 默认工程块，含破坏性操作关）、五个测试文件（56 例全绿）、分层门禁（core 1 文件）通过。
+- 部署状态：**已挂载稳定环境（版本落后一提交）**（2026-09-09）——子仓库已推送 GitHub；`web` profile 的 lockfile 解析到 `a41667e`，**不含** 2026-09-09 新增的破坏性操作关（本地提交 `9735d4d` 因 GitHub 连接失败尚未推送，故未重新安装）。推送恢复后需 `dsh plugin --profile web add github:FengZhiHen1/dsh-method-principles` 重新解析，并由用户在 GUI 重启生效。试验环境实测记录见 `technical-details/部署.md`。
 
 ## 阅读顺序
 
