@@ -28,20 +28,33 @@ export const SECTION_NAME = 'deployment:method-principles'
 export const SECTION_ORDER = 200
 
 /**
- * Distilled methodology principles (8 lines plus the heading). Kept in English
- * to match the rest of the system prompt, and intentionally short: the point is
- * to trigger capability the model already has, not to restate general process.
+ * The universal honesty floor, delivered to EVERY agent (all presets, including
+ * subagents). Converged from the original 8-principle list down to 4 lines once
+ * the engineering block took over everything coding-shaped:
+ *
+ * - "name the root cause" (originally line 1) was REMOVED, not moved: stated
+ *   unconditionally it invites fabricated causes, and the engineering block
+ *   owns the corrected conditional form. A regression test forbids the phrase
+ *   from reappearing here, because base and engineering text land in the same
+ *   prompt for the coding agents — two rules there must not disagree.
+ * - adversarial review was REMOVED: leaving it in the global floor would
+ *   re-deliver to coding agents exactly the protocol the engineering block
+ *   deliberately excludes.
+ * - Occam's razor and high cohesion/low coupling were REMOVED: already carried
+ *   by workspace instructions and structural gates, and coding-specific.
+ * - "judge first" was REMOVED: it fires only when comparing another agent's
+ *   conclusion, which this harness rarely presents.
+ *
+ * What remains holds for every agent and every task, and no other layer covers
+ * it. Deliberately titled "Evidence discipline" rather than "Working
+ * principles" so it is not mistaken for the engineering block.
  */
 export const DEFAULT_PRINCIPLES_TEXT = [
-  'Working principles:',
-  '- First principles: before changing anything, confirm the problem exists and reproduces, name the root cause, and state the success criteria and what will change after the fix.',
-  '- Adversarial review: have a reviewer with no implementation context hunt for counterexamples, gaps, and failure cases, and demand evidence for each.',
-  "- Ablation: to prove a rule, tool, or step matters, remove it, keep everything else fixed, re-run, and compare.",
-  "- Occam's razor: start from the simplest version that works and let structure follow real demand.",
+  'Evidence discipline:',
+  '- State what "done" means — the success criteria — before you start.',
   '- Surface uncertainty: state which conclusions lack evidence, which cases are untested, and where you are guessing.',
-  "- Judge first: form your own conclusion and basis before reading another agent's answer.",
   '- Critical thinking: separate what you observed from what you inferred, and say what evidence would overturn your judgment.',
-  '- High cohesion, low coupling: keep related logic together and isolate modules behind clear interfaces, so each change has a bounded blast radius.',
+  '- Ablation: to prove a rule, tool, or prompt matters, remove it, keep everything else fixed, re-run, and compare.',
 ].join('\n')
 
 /**

@@ -8,8 +8,8 @@
 
 - 主题：`dsh-method-principles`（向 DSH 系统提示词追加一段方法论原则的薄壳插件，Host bundle 形态）。
 - 设计基线：2026-09-08 经用户逐项确认，见 `decisions/`。
-- 实现状态：**已实现**（2026-09-09）——包骨架、插件面、按 agent 路由（`Config.routes` + 默认工程块，含破坏性操作关）、五个测试文件（56 例全绿）、分层门禁（core 1 文件）通过。
-- 部署状态：**已挂载稳定环境（版本落后一提交）**（2026-09-09）——子仓库已推送 GitHub；`web` profile 的 lockfile 解析到 `a41667e`，**不含** 2026-09-09 新增的破坏性操作关（本地提交 `9735d4d` 因 GitHub 连接失败尚未推送，故未重新安装）。推送恢复后需 `dsh plugin --profile web add github:FengZhiHen1/dsh-method-principles` 重新解析，并由用户在 GUI 重启生效。试验环境实测记录见 `technical-details/部署.md`。
+- 实现状态：**已实现**（2026-09-10）——包骨架、插件面、按 agent 路由（`Config.routes` + 默认工程块，含破坏性操作关）、基础段收敛为证据诚实底线 4 条、五个测试文件（60 例全绿）、分层门禁（core 1 文件）通过。
+- 部署状态：**待推送后重新挂载**（2026-09-10）——`web` profile 的 lockfile 仍解析 `a41667e`，**不含**破坏性操作关与基础段收敛（本地有 4 个提交待推送：`9735d4d` 破坏性操作关、基础段收敛、及两份状态记录）。推送后需 `dsh plugin --profile web add github:FengZhiHen1/dsh-method-principles` 重新解析，并由用户在 GUI 重启生效。试验环境实测记录见 `technical-details/部署.md`。
 
 ## 阅读顺序
 
@@ -27,12 +27,13 @@
 | `技术栈设计.md` | 语言与运行时、框架与关键库、版本基线、部署目标、兼容与安全约束及选型理由 |
 | `项目结构设计.md` | 模块边界、目录组织、依赖方向、命名与全局约定 |
 | `technical-details/README.md` | 技术细节目录的阅读顺序与文档地图 |
-| `technical-details/提示词段机制.md` | 段注册契约、默认文案、配置解析、装配位置与可见范围、生命周期、失败语义 |
+| `technical-details/提示词段机制.md` | 两层文案（基础层 / 工程层）、段注册契约、配置解析、装配位置与可见范围、生命周期、失败语义 |
 | `technical-details/部署.md` | 包形态、部署通道、实测门禁、验证方法、失败排查、已知限制 |
 | `decisions/DSR-001-交付形态与生效范围.md` | 交付形态（全局段）的备选、评价与重访条件 |
 | `decisions/DSR-002-文案配置粒度.md` | 文案配置粒度与消融单位的备选、评价与重访条件 |
 | `decisions/DSR-003-提示词段落点.md` | 落点选择（注册段 vs 装配事件 vs persona）的备选、评价与重访条件 |
 | `decisions/DSR-004-按agent路由.md` | 按 agent 路由的实现形态（单插件装配时求值 vs preset 本地文件）的备选、评价与重访条件 |
+| `decisions/DSR-005-基础段收敛.md` | 基础段由附图 8 条收敛为 4 条的备选、评价、逐条处置与重访条件 |
 | `TODO.md` | 未决与延期事项（仅未完成） |
 
 ## 已知偏差与 `missing evidence`

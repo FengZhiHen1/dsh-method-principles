@@ -13,7 +13,7 @@ import {
 } from '../index.js'
 import { makeCtx } from './mock-ctx.mjs'
 
-const HEADING = 'Working principles:'
+const HEADING = 'Evidence discipline:'
 
 test('schema fills the distilled default text when config omits it', () => {
   const config = Config({})
@@ -55,12 +55,33 @@ test('schema rejects a route without presets or text', () => {
   assert.throws(() => Config({ routes: [{ id: 'r', presets: ['standard'] }] }))
 })
 
-test('default text matches the documented shape: heading plus eight lines', () => {
+test('base block is the converged honesty floor: heading plus four lines', () => {
   const lines = DEFAULT_PRINCIPLES_TEXT.split('\n')
   assert.equal(lines[0], HEADING)
-  assert.equal(lines.length, 9)
+  assert.equal(lines.length, 5)
   for (const line of lines.slice(1)) assert.match(line, /^- /)
-  assert.equal(new Set(lines.slice(1)).size, 8)
+  assert.equal(new Set(lines.slice(1)).size, 4)
+})
+
+test('base block keeps the four converged items', () => {
+  for (const item of ['success criteria', 'Surface uncertainty', 'Critical thinking', 'Ablation']) {
+    assert.ok(DEFAULT_PRINCIPLES_TEXT.includes(item), item)
+  }
+})
+
+test('base block must not name a root cause (that phrase is the engineering block\'s job)', () => {
+  // Base and engineering text land in the SAME prompt for coding agents, so a
+  // reappearance here would contradict the engineering block's conditional rule.
+  assert.equal(/root cause/i.test(DEFAULT_PRINCIPLES_TEXT), false)
+})
+
+test('base block must not carry adversarial review (the engineering block excludes it)', () => {
+  assert.equal(/adversarial|reviewer|subagent/i.test(DEFAULT_PRINCIPLES_TEXT), false)
+})
+
+test('base block is not titled like the engineering block', () => {
+  assert.notEqual(HEADING, 'Working method')
+  assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.includes(HEADING), false)
 })
 
 test('default text contains no prompt variable references', () => {
