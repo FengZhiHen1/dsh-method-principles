@@ -84,6 +84,22 @@ test('base block is not titled like the engineering block', () => {
   assert.equal(DEFAULT_ENGINEERING_RIGOR_TEXT.includes(HEADING), false)
 })
 
+test('no line is delivered twice: the two blocks share no line', () => {
+  // Both blocks land in one prompt for the coding agents, so a shared line is
+  // standing cost with no second chance to be read differently.
+  const base = new Set(DEFAULT_PRINCIPLES_TEXT.split('\n'))
+  const shared = DEFAULT_ENGINEERING_RIGOR_TEXT.split('\n').filter(line => base.has(line))
+  assert.deepEqual(shared, [])
+})
+
+test('engineering block does not restate the base critical-thinking principle', () => {
+  // Ownership: the base states the observed/inferred principle and every agent
+  // receives it; the engineering bullet carries only the delta the base omits
+  // (which part was run or read, and that the marking goes in the message).
+  assert.equal(/separate what you observed from what you inferred/i.test(DEFAULT_ENGINEERING_RIGOR_TEXT), false)
+  assert.ok(DEFAULT_ENGINEERING_RIGOR_TEXT.includes('Say which part you ran or read and which part you are inferring, in the message itself.'))
+})
+
 test('default text contains no prompt variable references', () => {
   assert.equal(DEFAULT_PRINCIPLES_TEXT.includes('{{'), false)
 })

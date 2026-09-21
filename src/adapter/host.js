@@ -71,7 +71,15 @@ export const DEFAULT_PRINCIPLES_TEXT = [
  *   "unconfirmed + how you will test it" is a legal, non-silent way to comply,
  *   so a guess is never dressed up as a confirmed cause.
  * - claims are limited to those that matter, so the block does not turn every
- *   sentence into an evidence ceremony.
+ *   sentence into an evidence ceremony. The limiting lives in the trigger line
+ *   itself, never in a "apply only when it matters" escape clause: the base block
+ *   states the duty unconditionally, and a second clause here would read as
+ *   cancelling it.
+ * - the observed/inferred bullet carries only the DELTA the base block does not
+ *   state: which part was run or read, and that the marking goes in the message
+ *   itself. The principle belongs to the base block, which every agent receives,
+ *   so restating it here delivered one sentence twice inside a single prompt. A
+ *   regression test forbids the base sentence from reappearing in this block.
  * - the destructive-operation gate exists because a real incident destroyed the
  *   only copy of data: an irreversible delete ran after a step that had failed
  *   SILENTLY, and the "validation" sat after the delete. The gate therefore
@@ -91,7 +99,7 @@ export const DEFAULT_ENGINEERING_RIGOR_TEXT = [
   '- State either the root cause with its evidence, or that the cause is still unconfirmed and how you will test it.',
   '',
   'When you state a cause, a fix, or a conclusion that matters:',
-  '- Separate what you observed from what you inferred, and say what evidence would overturn it.',
+  '- Say which part you ran or read and which part you are inferring, in the message itself.',
   '',
   'Before any destructive or irreversible operation (delete, overwrite, truncate, force-push, drop, recursive cleanup):',
   '- Treat it as high-risk by default, however routine it looks.',
