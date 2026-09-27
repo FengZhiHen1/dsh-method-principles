@@ -3,11 +3,11 @@
 向 DSH 系统提示词追加一段方法论原则的薄壳插件。
 
 - 注册**一个全局提示词段**（段名 `deployment:method-principles`，order `200`），对全部 agent（含子代理）生效；
-- 默认文案是 8 条英文方法论原则（各 1–2 行），来自 B 站 Build in Public 分享的蒸馏；
-- 文案可通过 `Config.text` 整体替换；置为空字符串即关闭该段；
+- 段内文本分两层：**基础层**（4 条证据诚实底线，全部 agent 都拿到）与**工程层**（按触发时刻组织的交付纪律，只给 `standard`/`ptc` 主 Agent）；两层可分别用 `Config.text` 与 `Config.routes` 覆盖；
+- 置 `text: ''` 且 `routes: []` 即关闭该段；
 - 插件不提供 Service、不注册工具、不注册动态上下文，唯一副作用是段注册（随 fiber 自动回收）。
 
-设计依据见 `docs/`（需求、技术栈设计、项目结构设计、机制与部署、决策记录）。
+设计与代际说明见 `docs/`（需求、技术栈设计、项目结构设计、机制与部署、决策记录）。
 
 ## 安装
 
@@ -55,9 +55,11 @@ node '<实例版本 bin>' plugin --profile test add link:<本仓库路径>
 
 ## 验证
 
-1. 新建会话，展开系统提示词折叠行：该段应出现在 persona 之后、plan 指引之前，内容与 `DEFAULT_PRINCIPLES_TEXT` 一致。
-2. 子代理会话同样可见（全局段对全部 agent 生效）。
+1. 新建会话，展开系统提示词折叠行：该段应出现在 **persona 之后、plan 指引之前**，内容与默认文案一致。
+   - ⚠️ **persona 锚点随基线而变**：`0.1.2-rc.1` 时代 persona 是单段 `deployment:persona`；`0.1.7-rc.2` 起拆为 `deployment:persona-prefix`(0) 与 `deployment:persona-suffix`(10200)。本段 order `200` 位于**前缀之后、plan 之前**，因此在后一代里它排在 persona **后缀之前**（这是被接受的取舍，理由见 `docs/technical-details/提示词段机制.md`「代际提示」）。
+2. 子代理会话同样可见该段（全局段对全部 agent 生效），但只含基础层。
 3. 组合树复查：`node '<实例版本 bin>' --profile <name> --dump-config` 应恰有一行 `id: method-principles` / `name: dsh-method-principles`。
+   - ⚠️ 重复行**不会报错**（旧代的 `duplicate loader entry id` 守卫已被上游删除），须人工核对。
 
 ## 卸载
 
@@ -71,12 +73,14 @@ node '<实例版本 bin>' plugin --profile <name> remove dsh-method-principles
 
 ```powershell
 pnpm install
-pnpm test     # node --test（配置 / 段契约 / 生命周期 / 组合）
+pnpm test     # node --test（配置 / 段契约 / 路由 / 生命周期 / 组合 / 真实运行时装配）
 pnpm check    # 语法检查 + 测试
 node ..\..\tools\plugin-layering-check.mjs .   # 仓库分层门禁（薄壳豁免）
 ```
 
-结构：`index.js` 只做重导出，全部接线在 `src/adapter/host.js`（本插件无 `src/core/`，无裸 node 可单测的领域逻辑）。
+`test/runtime-assembly.test.mjs` 会装载本机已安装的 DSH 运行时的**真实** `dsh-system-prompt` 跑一次真实装配；找不到运行时则整层 **skip**（并给出原因），也可用 `DSH_RUNTIME_DIR` 指定运行时目录。
+
+结构：`index.js` 只做重导出，全部接线在 `src/adapter/host.js`，纯路由判定在 `src/core/routes.js`。
 
 ## 许可
 

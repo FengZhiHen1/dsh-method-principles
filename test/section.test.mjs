@@ -28,7 +28,11 @@ test('section order places it after the persona and before plan policy', () => {
   apply(ctx, Config({ routes: [] }))
   assert.equal(sections[0].order, SECTION_ORDER)
   assert.equal(SECTION_ORDER, 200)
-  assert.ok(SECTION_ORDER > 0, 'after deployment:persona (0)')
+  // The deployment persona is the anchor on the LOW side. From the v0.1.7
+  // baseline it is a split pair (prefix 0 / suffix 10200), so this section
+  // follows the PREFIX and precedes the SUFFIX; see the mechanism doc's
+  // generation note for why `200` (not `> 10200`) is the accepted trade-off.
+  assert.ok(SECTION_ORDER > 0, 'after deployment:persona-prefix (0)')
   assert.ok(SECTION_ORDER < 500, 'before plan:policy (500)')
 })
 
